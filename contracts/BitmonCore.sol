@@ -59,11 +59,11 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
             variant: _variant,
             purity: 100,
             generation: 0,
-            H: random(),
-            A: random(),
-            SA: random(),
-            D: random(),
-            SD: random()
+            h: random(),
+            a: random(),
+            sa: random(),
+            d: random(),
+            sd: random()
             });
         return _serializeBitmon(_bitmon);
     }
@@ -80,14 +80,15 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
         uintToBytes(13, bitmon.variant, b);
         uintToBytes(12, bitmon.purity, b);
         uintToBytes(11, bitmon.generation, b);
-        uintToBytes(10, bitmon.H, b);
-        uintToBytes(9, bitmon.A, b);
-        uintToBytes(8, bitmon.SA, b);
-        uintToBytes(7, bitmon.D, b);
-        uintToBytes(6, bitmon.SD, b);
+        uintToBytes(10, bitmon.h, b);
+        uintToBytes(9, bitmon.a, b);
+        uintToBytes(8, bitmon.sa, b);
+        uintToBytes(7, bitmon.d, b);
+        uintToBytes(6, bitmon.sd, b);
         return bytesToUint256(32, b);
     }
 
+    // Experimental function, not for production.
     function deserializeBitmon(uint256 tokenID) external returns (Bitmon memory) {
         bytes memory b = new bytes(32);
         uint256 serialized = bitmons[tokenID];
@@ -103,11 +104,11 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
         _bitmon.variant = bytesToUint8(13, b);
         _bitmon.purity = bytesToUint8(12, b);
         _bitmon.generation = bytesToUint8(11, b);
-        _bitmon.H = bytesToUint8(10, b);
-        _bitmon.A = bytesToUint8(9, b);
-        _bitmon.SA = bytesToUint8(8, b);
-        _bitmon.D = bytesToUint8(7, b);
-        _bitmon.SD = bytesToUint8(6, b);
+        _bitmon.h = bytesToUint8(10, b);
+        _bitmon.a = bytesToUint8(9, b);
+        _bitmon.sa = bytesToUint8(8, b);
+        _bitmon.d = bytesToUint8(7, b);
+        _bitmon.sd = bytesToUint8(6, b);
         return _bitmon;
     }
 

@@ -21,11 +21,11 @@ contract BitmonBase  {
         uint8     specimen;        // Specie identifier
         uint8     purity;          // Speciment purity (Between 0 and 100)
         uint8     variant;         // Color variants
-        uint8     H;               // Health
-        uint8     A;               // Attack
-        uint8     SA;              // Special attack
-        uint8     D;               // Defense
-        uint8     SD;              // Special defense
+        uint8     h;               // Health
+        uint8     a;               // Attack
+        uint8     sa;              // Special attack
+        uint8     d;               // Defense
+        uint8     sd;              // Special defense
     }
 
 }

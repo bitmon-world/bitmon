@@ -88,8 +88,9 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
         return bytesToUint256(32, b);
     }
 
-    function deserializeBitmon(uint256 serialized) external pure returns (Bitmon memory) {
+    function deserializeBitmon(uint256 tokenID) external returns (Bitmon memory) {
         bytes memory b = new bytes(32);
+        uint256 serialized = bitmons[tokenID];
         uintToBytes(32, serialized, b);
         Bitmon memory _bitmon;
         _bitmon.bitmonId = bytesToUint32(32, b);

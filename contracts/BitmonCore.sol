@@ -25,7 +25,7 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
         require(randomContractAddr != address(0), "contract address is not defined");
         (bool success, bytes memory data) = randomContractAddr.call(abi.encodeWithSignature("randomUint8()"));
         require(success, "contract call failed");
-        uint8 randomN = bytesToUint8(1, data);
+        uint8 randomN = bytesToUint8(data.length, data);
         while (randomN > 30) {
             randomN /= 2;
         }

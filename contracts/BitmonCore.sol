@@ -27,7 +27,7 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
         require(success, "contract call failed");
         uint8 randomN = bytesToUint8(data.length, data);
         while (randomN > 30) {
-            randomN /= 2;
+            randomN /= 3;
         }
         return randomN;
     }
@@ -89,7 +89,7 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
     }
 
     // Experimental function, not for production.
-    function deserializeBitmon(uint256 tokenID) external returns (Bitmon memory) {
+    function deserializeBitmon(uint256 tokenID) external view returns (Bitmon memory) {
         bytes memory b = new bytes(32);
         uint256 serialized = bitmons[tokenID];
         uintToBytes(32, serialized, b);

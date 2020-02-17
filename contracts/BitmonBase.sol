@@ -16,11 +16,11 @@ contract BitmonBase  {
         uint32    motherId;        // Mother unique ID to trace mother line
         uint32    birthHeight;     // BlockHeight of the network at Bitmon born.
         uint8     generation;      // Generation
-        uint8     nature;          // Characteristics of the behaviour (between 1 to 30)
-        uint8     specimen;        // Specie identifier
-        uint8     variant;         // Color variants
+        uint8     nature;          // Characteristics of the behavior (between 1 to 30)
         uint8     gender;          // Gender definition (female 1 or male 0)
+        uint8     specimen;        // Specie identifier
         uint8     purity;          // Speciment purity (Between 0 and 100)
+        uint8     variant;         // Color variants
         uint8     H;               // Health
         uint8     A;               // Attack
         uint8     SA;              // Special attack

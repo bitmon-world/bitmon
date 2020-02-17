@@ -24,10 +24,12 @@
   "scripts": {
     "compile": "truffle compile",
     "export": "yarn run compile && truffle-export-abi",
-    "deploy:ganache": "truffle migrate --network ganache",
     "test": "truffle test",
     "deploy:mainnet": "truffle migrate --network mainnet",
+    "deploy:ganache": "truffle migrate --network ganache",
+    "deploy:ropsten": "truffle migrate --network ropsten",
+    "console:mainnet": "truffle console --network mainnet",
     "console:ganache": "truffle console --network ganache",
-    "console:mainnet": "truffle console --network mainnet"
+    "console:ropsten": "truffle console --network ropsten"
   }
 }

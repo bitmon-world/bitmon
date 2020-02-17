@@ -4,10 +4,15 @@ pragma experimental ABIEncoderV2;
 import "./BitmonBase.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/roles/MinterRole.sol";
+import "./utils/seriality/Seriality.sol";
 
 
-// BitmonCore is the main input of the contract.
-contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole {
+/**
+ * @title BitmonCore
+ * @dev The BitmonCore contains the resources for call bitmon functions. Based on OpenZeppelin.
+ * @author eabz@polispay.org
+ */
+contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
 
     address public randomContractAddr;
 
@@ -20,46 +25,39 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole {
         require(randomContractAddr != address(0), "contract address is not defined");
         (bool success, bytes memory data) = randomContractAddr.call(abi.encodeWithSignature("randomUint8()"));
         require(success, "contract call failed");
-        uint8 randomN = _bytesToUint8(data.length, data);
+        uint8 randomN = bytesToUint8(1, data);
         while (randomN > 30) {
             randomN /= 2;
         }
         return randomN;
     }
 
-    function _bytesToUint8(uint _offst, bytes memory _input) internal pure returns (uint8 _output) {
-        assembly {
-            _output := mload(add(_input, _offst))
-        }
-    }
-
-    mapping (uint256 => Bitmon) bitmons;
+    mapping (uint256 => uint256) bitmons;
 
     function mintBitmon(address _to, uint256 _bitmonId, uint8 _gender, uint8 _nature, uint8 _specimen, uint8 _variant) external onlyMinter returns (bool) {
         uint256 tokenId = totalSupply() + 1;
         _safeMint(_to, tokenId, "");
-        Bitmon memory _bitmon = createGen0Bitmon(_bitmonId, _gender, _nature, _specimen, _variant);
-        bitmons[tokenId] = _bitmon;
+        bitmons[tokenId] = createGen0Bitmon(_bitmonId, _gender, _nature, _specimen, _variant);
         return true;
     }
 
-    function bitmonData(uint256 tokenId) external view returns (Bitmon memory) {
+    function bitmonData(uint256 tokenId) external view returns (uint256) {
         require(_exists(tokenId), "ERC721: Bitmon doesn't exists");
         return bitmons[tokenId];
     }
 
     // createGen0Bitmon is a function to create a Gen0 Bitmon.
-    function createGen0Bitmon(uint256 _bitmonID, uint8 _gender, uint8 _nature, uint8 _specimen, uint8 _variant) internal returns (Bitmon memory) {
+    function createGen0Bitmon(uint256 _bitmonID, uint8 _gender, uint8 _nature, uint8 _specimen, uint8 _variant) internal returns (uint256) {
         Bitmon memory _bitmon = Bitmon({
-            bitmonID: _bitmonID,
-            fatherID: uint256(0),
-            motherID: uint256(0),
+            bitmonId: uint32(_bitmonID),
+            fatherId: uint32(0),
+            motherId: uint32(0),
+            birthHeight: uint32(block.number),
             gender: _gender,
             nature: _nature,
             specimen: _specimen,
-            purity: 100,
-            birthHeight: block.number,
             variant: _variant,
+            purity: 100,
             generation: 0,
             H: random(),
             A: random(),
@@ -67,6 +65,48 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole {
             D: random(),
             SD: random()
             });
+        return _serializeBitmon(_bitmon);
+    }
+
+    function _serializeBitmon(Bitmon memory bitmon) private pure returns (uint256) {
+        bytes memory b = new bytes(32);
+        uintToBytes(32, bitmon.bitmonId, b);
+        uintToBytes(28, bitmon.fatherId, b);
+        uintToBytes(24, bitmon.motherId, b);
+        uintToBytes(20, bitmon.birthHeight, b);
+        uintToBytes(16, bitmon.gender, b);
+        uintToBytes(15, bitmon.nature, b);
+        uintToBytes(14, bitmon.specimen, b);
+        uintToBytes(13, bitmon.variant, b);
+        uintToBytes(12, bitmon.purity, b);
+        uintToBytes(11, bitmon.generation, b);
+        uintToBytes(10, bitmon.H, b);
+        uintToBytes(9, bitmon.A, b);
+        uintToBytes(8, bitmon.SA, b);
+        uintToBytes(7, bitmon.D, b);
+        uintToBytes(6, bitmon.SD, b);
+        return bytesToUint256(32, b);
+    }
+
+    function deserializeBitmon(uint256 serialized) external pure returns (Bitmon memory) {
+        bytes memory b = new bytes(32);
+        uintToBytes(32, serialized, b);
+        Bitmon memory _bitmon;
+        _bitmon.bitmonId = bytesToUint32(32, b);
+        _bitmon.fatherId = bytesToUint32(28, b);
+        _bitmon.motherId = bytesToUint32(24, b);
+        _bitmon.birthHeight = bytesToUint32(20, b);
+        _bitmon.gender = bytesToUint8(16, b);
+        _bitmon.nature = bytesToUint8(15, b);
+        _bitmon.specimen = bytesToUint8(14, b);
+        _bitmon.variant = bytesToUint8(13, b);
+        _bitmon.purity = bytesToUint8(12, b);
+        _bitmon.generation = bytesToUint8(11, b);
+        _bitmon.H = bytesToUint8(10, b);
+        _bitmon.A = bytesToUint8(9, b);
+        _bitmon.SA = bytesToUint8(8, b);
+        _bitmon.D = bytesToUint8(7, b);
+        _bitmon.SD = bytesToUint8(6, b);
         return _bitmon;
     }
 

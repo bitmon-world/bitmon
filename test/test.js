@@ -72,7 +72,9 @@ contract("BitmonCore", async (accounts) => {
 
     it("get bitmon data", async () => {
         let c = await Contract.deployed();
-        await c.bitmonData("1");
+        let b = await c.bitmonData("1");
+        let bitmon = await c.deserializeBitmon.call(b);
+        console.log(bitmon);
     });
 
 });

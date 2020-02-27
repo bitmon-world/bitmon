@@ -34,10 +34,10 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
 
     mapping (uint256 => uint256) bitmons;
 
-    function mintBitmon(address _to, uint256 _bitmonId, uint8 _gender, uint8 _nature, uint8 _specimen, uint8 _variant) external onlyMinter returns (bool) {
+    function mintBitmon(address _to, uint256 _bitmonId, uint8 _specimen) external onlyMinter returns (bool) {
         uint256 tokenId = totalSupply() + 1;
         _safeMint(_to, tokenId, "");
-        bitmons[tokenId] = createGen0Bitmon(_bitmonId, _gender, _nature, _specimen, _variant);
+        bitmons[tokenId] = createGen0Bitmon(_bitmonId, _specimen);
         return true;
     }
 
@@ -46,17 +46,36 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
         return bitmons[tokenId];
     }
 
+    function createChildBitmon(uint256 bitmon, address _to) external onlyMinter returns (uint256) {
+        // the breeding contract must be a minter
+        uint256 tokenId = totalSupply() + 1;
+        _safeMint(_to, tokenId, "");
+        bitmons[tokenId] = bitmon;
+        return tokenId;
+    }
+
     // createGen0Bitmon is a function to create a Gen0 Bitmon.
-    function createGen0Bitmon(uint256 _bitmonID, uint8 _gender, uint8 _nature, uint8 _specimen, uint8 _variant) internal returns (uint256) {
+    function createGen0Bitmon(uint256 _bitmonID, uint8 _specimen) internal returns (uint256) {
+        // 16/256 chance of special
+        // 32/256 chance of ugly
+
+        uint16 random16 = random();
+        uint8 variant = 0; // 0 = normal, 1 = special, 2 = ugly
+        if (random16 < 16) {
+            variant = 1;
+        } else if (random16 < 48) {
+            variant = 2;
+        }
+
         Bitmon memory _bitmon = Bitmon({
             bitmonId: uint32(_bitmonID),
             fatherId: uint32(0),
             motherId: uint32(0),
             birthHeight: uint32(block.number),
-            gender: _gender,
-            nature: _nature,
+            gender: random() < 128 ? 1 : 0,
+            nature: uint8(random16 % 30),
             specimen: _specimen,
-            variant: _variant,
+            variant: variant,
             purity: 100,
             generation: 0,
             h: random(),
@@ -64,7 +83,7 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
             sa: random(),
             d: random(),
             sd: random()
-            });
+        });
         return _serializeBitmon(_bitmon);
     }
 
@@ -89,7 +108,7 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
     }
 
     // Experimental function, not for production.
-    function deserializeBitmon(uint256 tokenID) external view returns (Bitmon memory) {
+    function _deserializeBitmon(uint256 tokenID) internal view returns (Bitmon memory) {
         bytes memory b = new bytes(32);
         uint256 serialized = bitmons[tokenID];
         uintToBytes(32, serialized, b);
@@ -111,5 +130,4 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
         _bitmon.sd = bytesToUint8(6, b);
         return _bitmon;
     }
-
 }

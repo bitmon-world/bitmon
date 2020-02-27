@@ -46,6 +46,14 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
         return bitmons[tokenId];
     }
 
+    function createChildBitmon(uint256 bitmon, address _to) external onlyMinter returns (uint256) {
+        // the breeding contract must be a minter
+        uint256 tokenId = totalSupply() + 1;
+        _safeMint(_to, tokenId, "");
+        bitmons[tokenId] = bitmon;
+        return tokenId;
+    }
+
     // createGen0Bitmon is a function to create a Gen0 Bitmon.
     function createGen0Bitmon(uint256 _bitmonID, uint8 _gender, uint8 _nature, uint8 _specimen, uint8 _variant) internal returns (uint256) {
         Bitmon memory _bitmon = Bitmon({
@@ -112,4 +120,7 @@ contract BitmonCore is BitmonBase, ERC721Enumerable, MinterRole, Seriality {
         return _bitmon;
     }
 
+    function getSerializedBitmon(uint256 tokenID) public view returns (uint256) {
+        return bitmons[tokenID];
+    }
 }
